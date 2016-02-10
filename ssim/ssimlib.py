@@ -45,6 +45,7 @@ class SSIMImage(object):
             else compat.Image.open(img)
         except IOError as e:
             logging.debug("Unable to open %s" % img)
+            raise IOError("Image probably malformed")
 
         # Resize image if size is defined and different
         # from original image
@@ -235,19 +236,23 @@ def main():
 
     for comparison_image in comparison_images:
 
-        if args.cw:
-            ssim = SSIM(args.base_image.name, size=size)
-            ssim_value = ssim.cw_ssim_value(comparison_image)
-        else:
-            ssim = SSIM(args.base_image.name, gaussian_kernel_1d, size=size)
-            ssim_value = ssim.ssim_value(comparison_image)
-
-        if is_a_single_image:
-            sys.stdout.write('%.7g' % ssim_value)
-        else:
-            sys.stdout.write('%s - %s: %.7g' % (
-                args.base_image.name, comparison_image, ssim_value))
-        sys.stdout.write('\n')
+        try:
+                
+            if args.cw:
+                ssim = SSIM(args.base_image.name, size=size)
+                ssim_value = ssim.cw_ssim_value(comparison_image)
+            else:
+                ssim = SSIM(args.base_image.name, gaussian_kernel_1d, size=size)
+                ssim_value = ssim.ssim_value(comparison_image)
+    
+            if is_a_single_image:
+                sys.stdout.write('%.7g' % ssim_value)
+            else:
+                sys.stdout.write('%s - %s: %.7g' % (
+                    args.base_image.name, comparison_image, ssim_value))
+            sys.stdout.write('\n')
+        except IOError as e:
+            logging.info(e)
 
 if __name__ == '__main__':
     main()
