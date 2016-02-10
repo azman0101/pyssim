@@ -5,6 +5,7 @@ from __future__ import absolute_import
 import argparse
 import glob
 import sys
+import logging
 
 import numpy as np
 from scipy import signal
@@ -39,8 +40,11 @@ class SSIMImage(object):
           size (tuple, optional): New image size to resize image to.
         """
         # Use existing or create a new PIL.Image
-        self.img = img if not isinstance(img, compat.basestring) \
+        try:
+            self.img = img if not isinstance(img, compat.basestring) \
             else compat.Image.open(img)
+        except IOError as e:
+            logging.debug("Unable to open %s" % img)
 
         # Resize image if size is defined and different
         # from original image
