@@ -248,7 +248,7 @@ def main():
             if is_a_single_image:
                 sys.stdout.write('%.7g' % ssim_value)
             else:
-                sys.stdout.write('%s - %s: %.7g' % (
+                sys.stdout.write('%s,%s,%.7g' % (
                     args.base_image.name, comparison_image, ssim_value))
             sys.stdout.write('\n')
         except IOError as e:
